@@ -1,3 +1,6 @@
+<?php
+  require_once 'config.php';
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -35,10 +38,6 @@
 
         var flightPlanCoordinates = [
         <?php
-          $db_password = 'm16dyiLsI';
-          $db_database = 'myshangw_gps';
-          $db_username = 'myshangw_gps';
-          $db_host = 'localhost';
 
           $conn = new mysqli($db_host, $db_username, $db_password, $db_database);
           // Check connection
@@ -82,7 +81,7 @@
       }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZLicZL4-D1mHdfc64xBixsfp70wtk8zs&callback=initMap">
+          src="https://maps.googleapis.com/maps/api/js?key=<?php echo $api_key ?>&callback=initMap">
     </script>
   </body>
 </html>
