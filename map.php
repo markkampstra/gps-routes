@@ -1,9 +1,5 @@
 <?php
-
-$db_password = 'm16dyiLsI';
-$db_database = 'myshangw_gps';
-$db_username = 'myshangw_gps';
-$db_host = 'localhost';
+require_once 'config.php';
 
 $conn = new mysqli($db_host, $db_username, $db_password, $db_database);
 // Check connection
