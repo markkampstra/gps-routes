@@ -32,8 +32,8 @@
 
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 3,
-          center: {lat: 0, lng: -180},
+          zoom: 7,
+          center: {lat: 59.334591, lng: 18.063240},
           mapTypeId: 'terrain'
         });
 
@@ -51,7 +51,7 @@
             echo "Failed to connect to MySQL: " . mysqli_connect_error();
           }
 
-          $result = mysqli_query($conn,"SELECT * FROM location_entries order by created_at desc limit 50");
+          $result = mysqli_query($conn,"SELECT * FROM location_entries order by created_at asc");
 
           $locations = array();
           while($row = mysqli_fetch_array($result)) {
