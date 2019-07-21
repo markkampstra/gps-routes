@@ -1,0 +1,102 @@
+<%-
+  coords = []
+  entries = LocationEntryRepository.new.aggregate
+  entries.each do |entry|
+    coords << "{lat: #{entry[:lat]}, lng: #{entry[:lon]}}"
+  end
+%>
+<% if false %>
+<table>
+  <tr>
+    <th>Lat</th>
+    <th>Lon</th>
+    <th>Start</th>
+    <th>End</th>
+    <th>Time</th>
+    <th>Points</th>
+  </tr>
+  <% LocationEntryRepository.new.aggregate.each do |entry| %>
+    <tr>
+      <td><%= entry[:lat].to_f %></td>
+      <td><%= entry[:lon].to_f %></td>
+      <td><%= entry[:start_at] %></td>
+      <td><%= entry[:end_at] %></td>
+      <td><%= entry[:time] %></td>
+      <td><%= entry[:nr_points] %></td>
+    </tr>
+  <% end %>
+</table>
+<% end %>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+<div id="map"></div>
+<script>
+  var markers = [];
+  var infowindow = null;
+  function initMap() {
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 6,
+      center: {lat: 59.334591, lng: 18.063240},
+      mapTypeId: 'terrain'
+    });
+
+    var flightPlanCoordinates = [
+      <%= coords.join(',') %>
+    ];
+    var flightPath = new google.maps.Polyline({
+      path: flightPlanCoordinates,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+
+    flightPath.setMap(map);
+    var counter = 0;
+
+    <% entries.each do |entry| %>
+      <% next if entry[:time] < 3600 %>
+      var circle = new google.maps.Circle({
+          strokeColor: '#0000FF',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#0000FF',
+          fillOpacity: 0.35,
+          map: map,
+          center: {lat: <%= entry[:lat] %>, lng: <%= entry[:lon] %>},
+          radius: <%= entry[:time] / 5 %>
+      });
+      var marker = new google.maps.Marker({
+        position: {lat: <%= entry[:lat] %>, lng: <%= entry[:lon] %>},
+        map: map,
+        info: '<%= (entry[:time] / 60.0 / 60.0 / 24.0).ceil %> dag(en) hier<br />Van: <%= entry[:start_at].strftime("%d-%m-%Y") %><br />Tot: <%= entry[:end_at].strftime("%d-%m-%Y") %><br />Totaal: <%= entry[:total_distance].round %> km'
+      });
+      markers.push(marker);
+      markers[counter].addListener('click', function() {
+        if (infowindow) {
+          infowindow.close();
+        }
+        infowindow = new google.maps.InfoWindow({
+          content: this.info
+        })
+        infowindow.open(map, this);
+      });
+      counter++;
+    <% end %>
+  }
+</script>
+<script async defer
+     src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap">
+</script>
+

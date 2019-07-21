@@ -1,0 +1,3 @@
+project=gps_routes
+test=rspec
+template=erb
