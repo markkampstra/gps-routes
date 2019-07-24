@@ -46,7 +46,7 @@
   var infowindow = null;
   function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 6,
+      zoom: 4,
       center: {lat: 59.334591, lng: 18.063240},
       mapTypeId: 'terrain'
     });
@@ -67,6 +67,11 @@
 
     <% entries.each do |entry| %>
       <% next if entry[:time] < 3600 %>
+      <%
+        duration = entry[:time] / 60.0 / 60.0 / 24.0
+        duration_str = "#{(duration * 24.0).round} uur" if duration < 0.6
+        duration_str = "#{duration.ceil} dag(en)" if duration >= 0.6
+      %>
       var circle = new google.maps.Circle({
           strokeColor: '#0000FF',
           strokeOpacity: 0.8,
@@ -80,7 +85,7 @@
       var marker = new google.maps.Marker({
         position: {lat: <%= entry[:lat] %>, lng: <%= entry[:lon] %>},
         map: map,
-        info: '<%= (entry[:time] / 60.0 / 60.0 / 24.0).ceil %> dag(en) hier<br />Van: <%= entry[:start_at].strftime("%d-%m-%Y") %><br />Tot: <%= entry[:end_at].strftime("%d-%m-%Y") %><br />Totaal: <%= entry[:total_distance].round %> km'
+        info: '<%= duration_str %> hier<br />Van: <%= entry[:start_at].strftime("%d-%m-%Y") %><br />Tot: <%= entry[:end_at].strftime("%d-%m-%Y") %><br />Totaal: <%= entry[:total_distance].round %> km'
       });
       markers.push(marker);
       markers[counter].addListener('click', function() {

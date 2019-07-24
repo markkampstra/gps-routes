@@ -6,7 +6,11 @@ class LocationEntryRepository < Hanami::Repository
   end
 
   def aggregate
-    entries = location_entries.where('created_at > ?', Hanami::Utils::Kernel.DateTime('2019-07-07')).order{ created_at.asc }
+    entries = location_entries.where {
+      created_at > Hanami::Utils::Kernel.DateTime('2019-07-07')
+    }.order {
+      created_at.asc
+    }
     total_distance = 0
     last_location = nil
     aggregated_locations = []
@@ -15,13 +19,15 @@ class LocationEntryRepository < Hanami::Repository
       last_location = entry if last_location.nil?
       if last_location != entry
         distance = distance_between_locations_in_m(last_location, entry)
-        if distance > 1000
+        duration = entry.created_at - last_location.created_at
+        next if distance > 5000 && duration < 200
+        if distance > 9000
           total_distance += (distance / 1000.0)
           aggregated_locations << {
             lat: last_location.lat,
             lon: last_location.lon,
             nr_points: nr_points,
-            time: entry.created_at - last_location.created_at,
+            time: duration,
             start_at: last_location.created_at,
             end_at: entry.created_at,
             total_distance: total_distance
