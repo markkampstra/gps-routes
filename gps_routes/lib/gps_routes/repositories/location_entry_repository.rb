@@ -22,7 +22,7 @@ class LocationEntryRepository < Hanami::Repository
       if last_location != entry
         distance = distance_between_locations_in_m(last_location, entry)
         duration = entry.created_at - last_location.created_at
-        next if distance > 5000 && duration < 200
+        next if distance > 2000 && duration < 65
         if distance > 2000
           total_distance += (distance / 1000.0)
           aggregated_locations << {
