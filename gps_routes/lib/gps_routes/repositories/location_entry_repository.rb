@@ -15,7 +15,9 @@ class LocationEntryRepository < Hanami::Repository
     last_location = nil
     aggregated_locations = []
     nr_points = 0
+    current_entry = nil
     entries.each do |entry|
+      current_entry = entry
       last_location = entry if last_location.nil?
       if last_location != entry
         distance = distance_between_locations_in_m(last_location, entry)
@@ -38,6 +40,19 @@ class LocationEntryRepository < Hanami::Repository
           nr_points += 1
         end
       end
+    end
+    if last_location != current_entry
+      distance = distance_between_locations_in_m(last_location, current_entry)
+      duration = current_entry.created_at - last_location.created_at
+      aggregated_locations << {
+        lat: last_location.lat,
+        lon: last_location.lon,
+        nr_points: nr_points,
+        time: duration,
+        start_at: last_location.created_at,
+        end_at: current_entry.created_at,
+        total_distance: total_distance
+      }
     end
     aggregated_locations
   end
