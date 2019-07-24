@@ -65,6 +65,7 @@
     flightPath.setMap(map);
     var counter = 0;
 
+    <% counter = 0 %>
     <% entries.each do |entry| %>
       <% next if entry[:time] < 3600 %>
       <%
@@ -72,20 +73,11 @@
         duration_str = "#{(duration * 24.0).round} uur" if duration < 0.6
         duration_str = "#{duration.ceil} dag(en)" if duration >= 0.6
       %>
-      var circle = new google.maps.Circle({
-          strokeColor: '#0000FF',
-          strokeOpacity: 0.8,
-          strokeWeight: 2,
-          fillColor: '#0000FF',
-          fillOpacity: 0.35,
-          map: map,
-          center: {lat: <%= entry[:lat] %>, lng: <%= entry[:lon] %>},
-          radius: <%= entry[:time] / 5 %>
-      });
       var marker = new google.maps.Marker({
         position: {lat: <%= entry[:lat] %>, lng: <%= entry[:lon] %>},
         map: map,
-        info: '<%= duration_str %> hier<br />Van: <%= entry[:start_at].strftime("%d-%m-%Y") %><br />Tot: <%= entry[:end_at].strftime("%d-%m-%Y") %><br />Totaal: <%= entry[:total_distance].round %> km'
+        info: '<%= duration_str %> hier<br />Van: <%= entry[:start_at].strftime("%d-%m-%Y") %><br />Tot: <%= entry[:end_at].strftime("%d-%m-%Y") %><br />Totaal: <%= entry[:total_distance].round %> km',
+        label: '<%= counter + 1 %>'
       });
       markers.push(marker);
       markers[counter].addListener('click', function() {
@@ -98,6 +90,7 @@
         infowindow.open(map, this);
       });
       counter++;
+      <% counter += 1 %>
     <% end %>
   }
 </script>
