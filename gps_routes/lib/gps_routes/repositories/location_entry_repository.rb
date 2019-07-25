@@ -22,8 +22,10 @@ class LocationEntryRepository < Hanami::Repository
       if last_location != entry
         distance = distance_between_locations_in_m(last_location, entry)
         duration = entry.created_at - last_location.created_at
-        next if distance > 2000 && duration < 65
-        if distance > 2000
+        raw_data = JSON.parse(entry.raw)
+        accuracy = raw_data['acc']
+        next if accuracy > 50 || (distance > 2000 && duration < 100)
+        if distance > 1000
           total_distance += (distance / 1000.0)
           aggregated_locations << {
             lat: last_location.lat,
@@ -32,7 +34,9 @@ class LocationEntryRepository < Hanami::Repository
             time: duration,
             start_at: last_location.created_at,
             end_at: entry.created_at,
-            total_distance: total_distance
+            total_distance: total_distance,
+            distance_to_previous: distance,
+            acc: accuracy
           }
           nr_points = 0
           last_location = entry
@@ -51,7 +55,8 @@ class LocationEntryRepository < Hanami::Repository
         time: duration,
         start_at: last_location.created_at,
         end_at: current_entry.created_at,
-        total_distance: total_distance
+        total_distance: total_distance,
+        distance_to_previous: distance
       }
     end
     aggregated_locations
