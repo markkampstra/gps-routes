@@ -1,10 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Web</title>
-    <%= favicon %>
+    <script type="text/javascript">
+    function detectBrowser() {
+      var useragent = navigator.userAgent;
+      var mapdiv = document.getElementById("map");
+
+      if (useragent.indexOf('iPhone') != -1 || useragent.indexOf('Android') != -1 ) {
+        mapdiv.style.width = '100%';
+        mapdiv.style.height = '100%';
+      } else {
+        mapdiv.style.width = '600px';
+        mapdiv.style.height = '800px';
+      }
+    }
+    </script>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>Noordkaap 2019</title>
   </head>
-  <body>
+  <body onload="detectBrowser()">
     <%= yield %>
   </body>
 </html>
