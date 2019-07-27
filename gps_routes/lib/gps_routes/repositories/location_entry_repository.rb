@@ -7,7 +7,7 @@ class LocationEntryRepository < Hanami::Repository
 
   def aggregate
     entries = location_entries.where {
-      created_at > Hanami::Utils::Kernel.DateTime('2019-07-08')
+      created_at > Hanami::Utils::Kernel.DateTime('2019-07-07')
     }.order {
       created_at.asc
     }

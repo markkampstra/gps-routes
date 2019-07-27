@@ -70,13 +70,15 @@
       <% next if entry[:time] < 3600 %>
       <%
         duration = entry[:time] / 60.0 / 60.0 / 24.0
-        duration_str = "#{(duration * 24.0).round} uur" if duration < 0.6
+        duration_str = "± #{(duration * 24.0).round} uur" if duration < 0.6
         duration_str = "#{duration.ceil} dag(en)" if duration >= 0.6
+        date_fmt = '%d-%m-%Y'
+        date_fmt << ' %H:%M' if duration < 0.6
       %>
       var marker = new google.maps.Marker({
         position: {lat: <%= entry[:lat] %>, lng: <%= entry[:lon] %>},
         map: map,
-        info: '<%= duration_str %> hier<br />Van: <%= entry[:start_at].strftime("%d-%m-%Y") %><br />Tot: <%= entry[:end_at].strftime("%d-%m-%Y") %><br />Totaal: <%= entry[:total_distance].round %> km',
+        info: '<%= duration_str %> hier<br />Van: <%= entry[:start_at].strftime(date_fmt) %><br />Tot: <%= entry[:end_at].strftime(date_fmt) %><br />Totaal: <%= entry[:total_distance].round %> km',
         label: '<%= counter + 1 %>'
       });
       markers.push(marker);
