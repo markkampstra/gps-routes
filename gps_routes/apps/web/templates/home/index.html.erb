@@ -39,10 +39,35 @@
         margin: 0;
         padding: 0;
       }
+      #toggle-short-stops {
+        position: absolute;
+        left: 10px;
+        top: 60px;
+        border: 1px solid #eee;
+        background-color: #fff;
+        font-family: Roboto, Arial, sans-serif;
+        font-size: 18px;
+        padding: 0 23px;
+        cursor: pointer;
+      }
+      #toggle-long-stops {
+        position: absolute;
+        left: 10px;
+        top: 100px;
+        border: 1px solid #eee;
+        background-color: #fff;
+        font-family: Roboto, Arial, sans-serif;
+        font-size: 18px;
+        padding: 0 23px;
+        cursor: pointer;
+      }
     </style>
 <div id="map"></div>
+<div id="toggle-short-stops">stops korter dan 6 uur</div>
+<div id="toggle-long-stops">stops langer dan 6 uur</div>
 <script>
-  var markers = [];
+  var short_markers = [];
+  var long_markers = [];
   var infowindow = null;
   function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -74,6 +99,7 @@
         duration_str = "#{duration.ceil} dag(en)" if duration >= 0.6
         date_fmt = '%d-%m-%Y'
         date_fmt << ' %H:%M' if duration < 0.6
+        short = duration < 0.6
       %>
       var marker = new google.maps.Marker({
         position: {lat: <%= entry[:lat] %>, lng: <%= entry[:lon] %>},
@@ -81,8 +107,13 @@
         info: '<%= duration_str %> hier<br />Van: <%= entry[:start_at].strftime(date_fmt) %><br />Tot: <%= entry[:end_at].strftime(date_fmt) %><br />Totaal: <%= entry[:total_distance].round %> km',
         label: '<%= counter + 1 %>'
       });
-      markers.push(marker);
-      markers[counter].addListener('click', function() {
+      <% if short %>
+        marker.setVisible(false);
+        short_markers.push(marker);
+      <% else %>
+        long_markers.push(marker);
+      <% end %>
+      marker.addListener('click', function() {
         if (infowindow) {
           infowindow.close();
         }
@@ -94,6 +125,18 @@
       counter++;
       <% counter += 1 %>
     <% end %>
+    var toggle_short_stops = document.getElementById('toggle-short-stops');
+    toggle_short_stops.addEventListener('click', function() {
+      for(var marker in short_markers) {
+        short_markers[marker].setVisible(!short_markers[marker].visible);
+      }
+    });
+    var toggle_long_stops = document.getElementById('toggle-long-stops');
+    toggle_long_stops.addEventListener('click', function() {
+      for(var marker in short_markers) {
+        long_markers[marker].setVisible(!long_markers[marker].visible);
+      }
+    });
   }
 </script>
 <script async defer
