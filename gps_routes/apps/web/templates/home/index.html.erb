@@ -92,20 +92,20 @@
 
     <% counter = 0 %>
     <% entries.each do |entry| %>
-      <% next if entry[:time] < 3600 %>
+      <% next if entry[:time] < 3600 && entry != entries.last %>
       <%
         duration = entry[:time] / 60.0 / 60.0 / 24.0
         duration_str = "± #{(duration * 24.0).round} uur" if duration < 0.5
         duration_str = "#{duration.ceil} dag(en)" if duration >= 0.5
         date_fmt = '%d-%m-%Y'
         date_fmt << ' %H:%M' if duration < 0.5
-        short = duration < 0.5
+        short = duration < 0.5 && entry != entries.last
       %>
       var marker = new google.maps.Marker({
         position: {lat: <%= entry[:lat] %>, lng: <%= entry[:lon] %>},
         map: map,
         info: '<%= duration_str %> hier<br />Van: <%= entry[:start_at].strftime(date_fmt) %><br />Tot: <%= entry[:end_at].strftime(date_fmt) %><br />Totaal: <%= entry[:total_distance].round %> km',
-        label: '<%= counter + 1 %>'
+        label: '<%= entry == entries.last ? "X" : counter + 1 %>'
       });
       <% if short %>
         marker.setVisible(false);
