@@ -104,8 +104,14 @@
       var marker = new google.maps.Marker({
         position: {lat: <%= entry[:lat] %>, lng: <%= entry[:lon] %>},
         map: map,
-        info: '<%= duration_str %> hier<br />Van: <%= entry[:start_at].strftime(date_fmt) %><br />Tot: <%= entry[:end_at].strftime(date_fmt) %><br />Totaal: <%= entry[:total_distance].round %> km',
-        label: '<%= entry == entries.last ? "X" : counter + 1 %>'
+        info: '<%= "<b>Hier zijn we nu</b>:<br />" if entry == entries.last %><%= duration_str %> hier<br />Van: <%= entry[:start_at].strftime(date_fmt) %><br />Tot: <%= entry[:end_at].strftime(date_fmt) %><br />Totaal: <%= entry[:total_distance].round %> km',
+        <% if entry == entries.last %>
+          icon: {
+            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+            scaledSize: new google.maps.Size(50, 50)
+          },
+        <% end %>
+        label: '<%= entry == entries.last ? "" : counter + 1 %>'
       });
       <% if short %>
         marker.setVisible(false);
