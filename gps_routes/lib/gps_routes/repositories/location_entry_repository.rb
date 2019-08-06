@@ -49,8 +49,8 @@ class LocationEntryRepository < Hanami::Repository
       distance = distance_between_locations_in_m(last_location, current_entry)
       duration = current_entry.created_at - last_location.created_at
       aggregated_locations << {
-        lat: last_location.lat,
-        lon: last_location.lon,
+        lat: current_entry.lat,
+        lon: current_entry.lon,
         nr_points: nr_points,
         time: duration,
         start_at: last_location.created_at,
