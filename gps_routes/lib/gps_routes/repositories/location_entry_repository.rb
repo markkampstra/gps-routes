@@ -2,12 +2,15 @@ require 'haversine'
 
 class LocationEntryRepository < Hanami::Repository
   def all_from_trip
-    location_entries.where('created_at > ?', Hanami::Utils::Kernel.DateTime('2019-07-07')).order{ created_at.desc }
+    location_entries.where('trip = \'nordkapp-2019\' and created_at > ?', Hanami::Utils::Kernel.DateTime('2019-07-07')).order{ created_at.desc }
   end
 
   def aggregate
-    entries = location_entries.where {
-      created_at > Hanami::Utils::Kernel.DateTime('2019-07-07')
+    entries = location_entries
+      .where('trip = \'nordkapp-2019\'')
+      .where {
+      measured_at > Hanami::Utils::Kernel.DateTime('2019-07-07')
+      # trip == 'nordkapp-2019'
     }.order {
       created_at.asc
     }
